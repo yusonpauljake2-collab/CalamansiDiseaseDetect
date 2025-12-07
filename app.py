@@ -406,14 +406,18 @@ class YoloDiseaseDetector:
 
 	def __init__(self, model_path: str, device: Optional[str] = None):
 		# Import YOLO here to defer import and prevent segmentation fault on startup
+		# Set device to CPU explicitly before importing to avoid GPU-related segfaults
+		os.environ['CUDA_VISIBLE_DEVICES'] = ''
+		
 		from ultralytics import YOLO
 		
 		if not os.path.exists(model_path):
 			raise FileNotFoundError(f"Model file not found at '{model_path}'. Place your model file in the project root or provide a valid path.")
+		
+		# Always use CPU on Streamlit Cloud
+		device = device or 'cpu'
 		self.model = YOLO(model_path)
-		if device is not None:
-			# Set device if provided (e.g., 'cpu' or '0' for CUDA GPU 0)
-			self.model.to(device)
+		self.model.to(device)
 
 	def predict_image(self, image: Image.Image, conf: float = 0.25, iou: float = 0.50, imgsz: int = 640) -> Tuple[Image.Image, List[Dict]]:
 		"""
