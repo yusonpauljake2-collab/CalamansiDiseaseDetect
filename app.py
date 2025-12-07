@@ -16,8 +16,6 @@ from PIL import Image
 # Defer YOLO import until needed to prevent segmentation fault on startup
 # from ultralytics import YOLO  # Will be imported inside the class
 
-
-
 # Page configuration with modern settings
 st.set_page_config(
     page_title="Calamansi Disease Detector", 
