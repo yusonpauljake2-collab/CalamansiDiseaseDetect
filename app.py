@@ -2,6 +2,10 @@ import io
 import os
 from typing import List, Dict, Tuple, Optional
 
+# Set environment variables before importing OpenCV to prevent GUI issues
+os.environ['OPENCV_IO_ENABLE_OPENEXR'] = '0'
+os.environ['QT_QPA_PLATFORM'] = 'offscreen'
+
 import numpy as np
 import streamlit as st
 from PIL import Image
