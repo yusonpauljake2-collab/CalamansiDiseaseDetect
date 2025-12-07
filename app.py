@@ -16,6 +16,8 @@ from PIL import Image
 # Defer YOLO import until needed to prevent segmentation fault on startup
 # from ultralytics import YOLO  # Will be imported inside the class
 
+
+
 # Page configuration with modern settings
 st.set_page_config(
     page_title="Calamansi Disease Detector", 
@@ -403,19 +405,31 @@ class YoloDiseaseDetector:
 	"""Wrapper around Ultralytics YOLO for calamansi disease detection."""
 
 	def __init__(self, model_path: str, device: Optional[str] = None):
-		# Import YOLO here to defer import and prevent segmentation fault on startup
-		# Set device to CPU explicitly before importing to avoid GPU-related segfaults
+		# Set all environment variables before importing to prevent segmentation faults
 		os.environ['CUDA_VISIBLE_DEVICES'] = ''
+		os.environ['OPENCV_IO_ENABLE_OPENEXR'] = '0'
+		os.environ['QT_QPA_PLATFORM'] = 'offscreen'
+		os.environ['DISPLAY'] = ''
+		os.environ['MPLBACKEND'] = 'Agg'
+		os.environ['OMP_NUM_THREADS'] = '1'
+		os.environ['MKL_NUM_THREADS'] = '1'
 		
-		from ultralytics import YOLO
+		# Import YOLO here to defer import and prevent segmentation fault on startup
+		try:
+			from ultralytics import YOLO
+		except Exception as e:
+			raise ImportError(f"Failed to import YOLO: {str(e)}")
 		
 		if not os.path.exists(model_path):
 			raise FileNotFoundError(f"Model file not found at '{model_path}'. Place your model file in the project root or provide a valid path.")
 		
 		# Always use CPU on Streamlit Cloud
 		device = device or 'cpu'
-		self.model = YOLO(model_path)
-		self.model.to(device)
+		try:
+			self.model = YOLO(model_path)
+			self.model.to(device)
+		except Exception as e:
+			raise RuntimeError(f"Failed to load YOLO model: {str(e)}")
 
 	def predict_image(self, image: Image.Image, conf: float = 0.25, iou: float = 0.50, imgsz: int = 640) -> Tuple[Image.Image, List[Dict]]:
 		"""
@@ -435,7 +449,15 @@ class YoloDiseaseDetector:
 		res = results[0]
 		
 		# Use original YOLO plot but remove ID numbers from labels
+		# Set environment variables again before importing cv2
+		os.environ['OPENCV_IO_ENABLE_OPENEXR'] = '0'
+		os.environ['QT_QPA_PLATFORM'] = 'offscreen'
+		os.environ['DISPLAY'] = ''
+		
 		import cv2
+		# Suppress OpenCV warnings and GUI
+		cv2.setNumThreads(1)
+		
 		annotated = res.plot()  # Get original YOLO styling
 		annotated_bgr = annotated.copy()
 		
@@ -478,8 +500,21 @@ AUTO_DETECT_KEY = "auto_detect_retake"
 
 @st.cache_resource
 def load_detector(model_path: str):
+    # Set environment variables before loading to prevent segmentation faults
+    os.environ['CUDA_VISIBLE_DEVICES'] = ''
+    os.environ['OPENCV_IO_ENABLE_OPENEXR'] = '0'
+    os.environ['QT_QPA_PLATFORM'] = 'offscreen'
+    os.environ['DISPLAY'] = ''
+    os.environ['MPLBACKEND'] = 'Agg'
+    os.environ['OMP_NUM_THREADS'] = '1'
+    os.environ['MKL_NUM_THREADS'] = '1'
+    
     # Explicitly use CPU to avoid any GPU-related segmentation faults
-    return YoloDiseaseDetector(model_path=model_path, device='cpu')
+    try:
+        return YoloDiseaseDetector(model_path=model_path, device='cpu')
+    except Exception as e:
+        st.error(f"Failed to load model: {str(e)}")
+        raise
 
 def get_disease_info(disease_name):
     """
@@ -926,11 +961,22 @@ def main():
                 status_text.text("🔄 Initializing AI model...")
                 progress_bar.progress(20)
                 
-                status_text.text("🔍 Analyzing image...")
-                progress_bar.progress(60)
-                
                 try:
+                    # Set environment variables before loading detector
+                    os.environ['CUDA_VISIBLE_DEVICES'] = ''
+                    os.environ['OPENCV_IO_ENABLE_OPENEXR'] = '0'
+                    os.environ['QT_QPA_PLATFORM'] = 'offscreen'
+                    os.environ['DISPLAY'] = ''
+                    os.environ['MPLBACKEND'] = 'Agg'
+                    
+                    status_text.text("🔍 Loading model...")
+                    progress_bar.progress(40)
+                    
                     detector = load_detector(model_path)
+                    
+                    status_text.text("🔍 Analyzing image...")
+                    progress_bar.progress(60)
+                    
                     annotated_image, detections = detector.predict_image(
                         image,
                         conf=confidence,
