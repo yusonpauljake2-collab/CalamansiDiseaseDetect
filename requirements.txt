@@ -1,15 +1,15 @@
 # Core dependencies
 streamlit>=1.38.0
-ultralytics==8.0.196
+ultralytics>=8.0.0
 pillow>=10.0.0
 numpy>=1.24.0,<2.0.0
 
 # Deep learning framework (PyTorch) - CPU only for cloud
-torch>=2.0.0,<2.2.0
-torchvision>=0.15.0,<0.17.0
+torch>=2.0.0
+torchvision>=0.15.0
 
 # Computer vision (use headless version for cloud deployment)
-opencv-python-headless==4.8.1.78
+opencv-python-headless>=4.8.0
 
 # Serialization (required for PyTorch model loading)
 dill>=0.3.0
