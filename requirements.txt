@@ -13,3 +13,4 @@ opencv-python-headless>=4.8.0
 
 # Serialization (required for PyTorch model loading)
 dill>=0.3.0
+
