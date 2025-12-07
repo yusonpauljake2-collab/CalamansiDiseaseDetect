@@ -1,15 +1,20 @@
 import io
 import os
+import sys
 from typing import List, Dict, Tuple, Optional
 
-# Set environment variables before importing OpenCV to prevent GUI issues
+# Set environment variables before importing any libraries to prevent GUI issues
 os.environ['OPENCV_IO_ENABLE_OPENEXR'] = '0'
 os.environ['QT_QPA_PLATFORM'] = 'offscreen'
+os.environ['DISPLAY'] = ''
+os.environ['MPLBACKEND'] = 'Agg'
 
 import numpy as np
 import streamlit as st
 from PIL import Image
-from ultralytics import YOLO
+
+# Defer YOLO import until needed to prevent segmentation fault on startup
+# from ultralytics import YOLO  # Will be imported inside the class
 
 
 
@@ -400,6 +405,9 @@ class YoloDiseaseDetector:
 	"""Wrapper around Ultralytics YOLO for calamansi disease detection."""
 
 	def __init__(self, model_path: str, device: Optional[str] = None):
+		# Import YOLO here to defer import and prevent segmentation fault on startup
+		from ultralytics import YOLO
+		
 		if not os.path.exists(model_path):
 			raise FileNotFoundError(f"Model file not found at '{model_path}'. Place your model file in the project root or provide a valid path.")
 		self.model = YOLO(model_path)
@@ -468,7 +476,8 @@ AUTO_DETECT_KEY = "auto_detect_retake"
 
 @st.cache_resource
 def load_detector(model_path: str):
-    return YoloDiseaseDetector(model_path=model_path)
+    # Explicitly use CPU to avoid any GPU-related segmentation faults
+    return YoloDiseaseDetector(model_path=model_path, device='cpu')
 
 def get_disease_info(disease_name):
     """
