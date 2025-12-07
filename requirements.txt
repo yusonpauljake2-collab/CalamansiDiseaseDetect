@@ -2,14 +2,14 @@
 streamlit>=1.38.0
 ultralytics>=8.3.0
 pillow>=10.0.0
-numpy>=1.24.0,<2.0.0
+numpy>=1.24.0
 
-# Deep learning framework (PyTorch) - pinned for stability
-torch>=2.0.0,<2.4.0
-torchvision>=0.15.0,<0.19.0
+# Deep learning framework (PyTorch)
+torch>=2.0.0
+torchvision>=0.15.0
 
 # Computer vision (use headless version for cloud deployment)
-opencv-python-headless>=4.8.0,<5.0.0
+opencv-python-headless>=4.8.0
 
 # Serialization (required for PyTorch model loading)
 dill>=0.3.0
