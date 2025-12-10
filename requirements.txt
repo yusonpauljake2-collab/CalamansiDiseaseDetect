@@ -4,13 +4,15 @@ ultralytics>=8.0.0
 pillow>=10.0.0
 numpy>=1.24.0,<2.0.0
 
-# Deep learning framework (PyTorch) - CPU only for cloud
-torch>=2.0.0
-torchvision>=0.15.0
+# Deep learning framework (CPU-only for cloud deployment)
+torch>=2.0.0,<2.2.0
+torchvision>=0.15.0,<0.17.0
 
-# Computer vision (use headless version for cloud deployment)
+# Computer vision (headless for server environments)
 opencv-python-headless>=4.8.0
 
-# Serialization (required for PyTorch model loading)
+# Serialization
 dill>=0.3.0
 
+# Optional: for production stability
+watchdog>=2.1.0
