@@ -1,14 +1,41 @@
+"""
+Calamansi Disease Detection System
+Using YOLOv8 for real-time disease detection
+"""
+
 import io
 import os
 import sys
 from typing import List, Dict, Tuple, Optional
 
-# Set environment variables before importing any libraries to prevent GUI issues
+# ==========================================
+# CRITICAL: Set environment variables FIRST
+# These prevent segmentation faults
+# ==========================================
+
+# GPU/CPU settings
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
+os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+
+# Threading settings
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'
+os.environ['NUMEXPR_NUM_THREADS'] = '1'
+
+# OpenCV settings (prevent GUI issues on server)
 os.environ['OPENCV_IO_ENABLE_OPENEXR'] = '0'
 os.environ['QT_QPA_PLATFORM'] = 'offscreen'
 os.environ['DISPLAY'] = ''
+
+# Matplotlib settings
 os.environ['MPLBACKEND'] = 'Agg'
 
+# Suppress warnings
+import warnings
+warnings.filterwarnings('ignore', category=FutureWarning)
+warnings.filterwarnings('ignore', category=DeprecationWarning)
+
+# Import dependencies
 import numpy as np
 import streamlit as st
 from PIL import Image
