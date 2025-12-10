@@ -535,21 +535,14 @@ def ensure_model_exists(model_path: str):
 
 @st.cache_resource
 def load_detector(model_path: str):
-    # Set environment variables before loading to prevent segmentation faults
-    os.environ['CUDA_VISIBLE_DEVICES'] = ''
-    os.environ['OPENCV_IO_ENABLE_OPENEXR'] = '0'
-    os.environ['QT_QPA_PLATFORM'] = 'offscreen'
-    os.environ['DISPLAY'] = ''
-    os.environ['MPLBACKEND'] = 'Agg'
-    os.environ['OMP_NUM_THREADS'] = '1'
-    os.environ['MKL_NUM_THREADS'] = '1'
-    
-    # Explicitly use CPU to avoid any GPU-related segmentation faults
+    """Load detector safely."""
     try:
-        return YoloDiseaseDetector(model_path=model_path, device='cpu')
-    except Exception as e:
-        st.error(f"Failed to load model: {str(e)}")
-        raise
+        from ultralytics import YOLO
+        
+        if not os.path.exists(model_path):
+            st.warning(f"Model '{model_path}' not found. Using YOLOv8n for testing.")
+            model_path = 'yolov8n.pt'
+        
 
 def get_disease_info(disease_name):
     """
