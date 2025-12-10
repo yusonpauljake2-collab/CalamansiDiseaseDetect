@@ -496,7 +496,26 @@ RETAKE_IMAGE_BYTES_KEY = "retake_image_bytes"
 RETAKE_IMAGE_NAME_KEY = "retake_image_name"
 AUTO_DETECT_KEY = "auto_detect_retake"
 
+import os
+import streamlit as st
 
+# Model management
+BASE_MODEL_PATH = "BaseModel.pt"
+ENHANCED_MODEL_PATH = "EnhancedModel.pt"
+
+def ensure_model_exists(model_path: str):
+    """Check if model exists, provide guidance if missing."""
+    if not os.path.exists(model_path):
+        st.error(f"""
+        ⚠️ Model file not found: `{model_path}`
+        
+        **To fix this:**
+        1. Upload your model files to the repository root
+        2. Or use a model from Ultralytics Hub
+        3. Or use: `yolov8n.pt` (nano model for testing)
+        """)
+        return False
+    return True
 
 @st.cache_resource
 def load_detector(model_path: str):
