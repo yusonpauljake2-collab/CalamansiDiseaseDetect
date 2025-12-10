@@ -47,7 +47,7 @@ st.markdown("""
         --shadow-color: rgba(46, 125, 50, 0.1);
         --border-color: #c8e6c9;
     }
-    
+
     /* Dark mode variables - Auto detect browser preference */
     @media (prefers-color-scheme: dark) {
         :root {
