@@ -1,6 +1,3 @@
-"""
-Calamansi Disease Detection System
-"""
 
 import os
 import sys
